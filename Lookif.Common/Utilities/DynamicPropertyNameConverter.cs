@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESS.Lookif.Library.Common.Utilities
+namespace Lookif.Library.Common.Utilities
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = true)]
     public class JsonPropertyNameByTypeAttribute : Attribute

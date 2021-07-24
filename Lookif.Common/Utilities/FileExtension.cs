@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ESS.Lookif.Library.Common.Utilities
+namespace Lookif.Library.Common.Utilities
 {
     public static class FileExtension
     {

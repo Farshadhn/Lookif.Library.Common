@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ESS.Lookif.Library.Common.Enums
+namespace Lookif.Library.Common.Enums
 {
     public enum GenderType
     {
