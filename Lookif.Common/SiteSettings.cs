@@ -1,6 +1,6 @@
 ﻿namespace Lookif.Library.Common
 {
-    public abstract class SiteSettings
+    public  class SiteSettings
     {
         public string ElmahPath { get; set; }
         public string ImageSource { get; set; }
@@ -9,7 +9,7 @@
         public IdentitySettings IdentitySettings { get; set; }
     }
 
-    public abstract class IdentitySettings
+    public  class IdentitySettings
     {
         public bool PasswordRequireDigit { get; set; }
         public int PasswordRequiredLength { get; set; }
