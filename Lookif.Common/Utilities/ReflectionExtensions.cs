@@ -17,11 +17,11 @@ namespace Lookif.Library.Common.Utilities
         /// </summary>
         /// <param name="className">Name of the class sought.</param>
         /// <returns>Types that have the class name specified. They may not be in the same namespace.</returns>
-        public static Type[] getTypeByName(string className)
+        public static Type[] getTypeByName(string className, string FromSpecificAssembly = "")
         {
-            List<Type> returnVal = new List<Type>();
-
-            foreach (Assembly a in AppDomain.CurrentDomain.GetAssemblies())
+            List<Type> returnVal = new();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.Contains(FromSpecificAssembly));
+            foreach (Assembly a in assemblies)
             {
                 Type[] assemblyTypes = a.GetTypes();
                 for (int j = 0; j < assemblyTypes.Length; j++)
@@ -37,6 +37,21 @@ namespace Lookif.Library.Common.Utilities
         }
 
 
+        public static Type getTypeByName(string className, Assembly FromSpecificAssembly)
+        {
+
+            Type[] assemblyTypes = FromSpecificAssembly.GetTypes();
+            for (int j = 0; j < assemblyTypes.Length; j++)
+            {
+                if (assemblyTypes[j].Name == className)
+                {
+                   return  assemblyTypes[j];
+                }
+            }
+
+
+            return default;
+        }
 
 
         public static bool HasAttribute<T>(this MemberInfo type, bool inherit = false) where T : Attribute
@@ -174,9 +189,9 @@ namespace Lookif.Library.Common.Utilities
         /// </summary>
         /// <param name="src"></param>
         /// <returns></returns>
-        public static List<PropertyInfo> GetProperties(this string src, bool all = false)
+        public static List<PropertyInfo> GetProperties(this string src, bool all = false, string FromSpecificAssembly = "")
         {
-            var type = getTypeByName(src).FirstOrDefault();
+            var type = getTypeByName(src, FromSpecificAssembly).FirstOrDefault();
             if (type is null)
                 throw new AppException($"There is no type named {src}");
 
@@ -198,6 +213,12 @@ namespace Lookif.Library.Common.Utilities
         {
             return src.GetType().GetProperties();
         }
+        public static T? GetAttribute<T>(this Type src) where T : Attribute
+        {
+            return (T)Attribute.GetCustomAttribute(src, typeof(T));
+        }
+
+
 
 
 

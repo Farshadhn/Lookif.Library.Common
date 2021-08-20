@@ -1,6 +1,6 @@
 ﻿namespace Lookif.Library.Common
 {
-    public  class SiteSettings
+    public partial class SiteSettings
     {
         public string ElmahPath { get; set; }
         public string ImageSource { get; set; }
