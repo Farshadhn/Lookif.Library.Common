@@ -19,7 +19,7 @@ namespace Lookif.Library.Common.Utilities
 
         }
 
-        private static string GetHash(HashAlgorithm hashAlgorithm, string input)
+        public static string GetHash(HashAlgorithm hashAlgorithm, string input)
         {
 
             // Convert the input string to a byte array and compute the hash.
@@ -41,7 +41,7 @@ namespace Lookif.Library.Common.Utilities
         }
 
         // Verify a hash against a string.
-        private static bool VerifyHash(HashAlgorithm hashAlgorithm, string input, string hash)
+        public static bool VerifyHash(HashAlgorithm hashAlgorithm, string input, string hash)
         {
             // Hash the input.
             var hashOfInput = GetHash(hashAlgorithm, input);
