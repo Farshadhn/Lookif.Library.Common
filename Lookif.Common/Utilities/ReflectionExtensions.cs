@@ -36,7 +36,18 @@ namespace Lookif.Library.Common.Utilities
             return returnVal.ToArray();
         }
 
+        public static IEnumerable<KeyValuePair<string, object>> GetProperties_KeyValue(this object me)
+        {
+            List<KeyValuePair<string, object>> result = new();
+            foreach (var property in me.GetType().GetProperties())
+            {
+                if (property.GetValue(me) is null)
+                    continue;
 
+                result.Add(new KeyValuePair<string, object>(property.Name, property.GetValue(me)));
+            }
+            return result;
+        }
         public static Type getTypeByName(string className, Assembly FromSpecificAssembly)
         {
 
