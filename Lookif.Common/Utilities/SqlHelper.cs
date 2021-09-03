@@ -14,23 +14,23 @@ namespace Lookif.Library.Common.Utilities
     {
         public static DataTable RawSqlQuery(string query, DbContext context, IEnumerable<string> columns)
         {
-            using (var command = context.Database.GetDbConnection().CreateCommand())
+            using var command = context.Database.GetDbConnection().CreateCommand();
+
+            command.CommandText = query;
+            command.CommandType = CommandType.Text;
+
+            context.Database.OpenConnection();
+
+            using (var result = command.ExecuteReader())
             {
-                command.CommandText = query;
-                command.CommandType = CommandType.Text;
+                var dataTable = new DataTable();
 
-                context.Database.OpenConnection();
 
-                using (var result = command.ExecuteReader())
-                {
-                    var dataTable = new DataTable();
-                    
+                dataTable.Load(result);
 
-                    dataTable.Load(result);
-                    
-                    return dataTable;
-                }
+                return dataTable;
             }
+
 
         }
 
@@ -44,18 +44,18 @@ namespace Lookif.Library.Common.Utilities
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
-        public static IEnumerable<Dictionary<string,string>> ConvertDataTable(DataTable dt)
-        { 
+        public static IEnumerable<Dictionary<string, string>> ConvertDataTable(DataTable dt)
+        {
             foreach (DataRow row in dt.Rows)
             {
                 var dict = new Dictionary<string, string>();
                 foreach (DataColumn column in row.Table.Columns)
                 {
                     dict.Add(column.ColumnName, row[column.ColumnName].ToString());
-                    
+
                 }
                 yield return dict;
-            } 
+            }
         }
 
 
