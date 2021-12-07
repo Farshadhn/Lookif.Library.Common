@@ -8,7 +8,7 @@ namespace Lookif.Library.Common.Utilities
 {
     public static class TypeExtensions
     {
-        public static IEnumerable<Type> GetInterfaces(this Type type, bool includeInherited)
+        public static IEnumerable<Type> GetDirectOrIndirectInterfaces(this Type type, bool includeInherited)
         {
             if (includeInherited || type.BaseType == null)
                 return type.GetInterfaces();
