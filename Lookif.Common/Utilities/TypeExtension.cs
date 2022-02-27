@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lookif.Library.Common.Utilities
 {
@@ -16,10 +14,11 @@ namespace Lookif.Library.Common.Utilities
         /// <returns></returns>
         public static IEnumerable<Type> GetDirectInterfaces(this Type type, bool direct)
         {
-            if (!direct || type.BaseType == null)
-                return type.GetInterfaces();
+            if (direct)
+                return type.GetInterfaces().Except(type.BaseType?.GetInterfaces());
             else
-                return type.GetInterfaces().Except(type.BaseType.GetInterfaces());
+                return type.GetInterfaces();
+
         }
     }
 }
