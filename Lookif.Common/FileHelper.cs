@@ -10,11 +10,11 @@ namespace Lookif.Library.Common
 {
     public static class FileHelper
     {
-        public async static Task<string> SaveTo(this IFormFile formFile,CancellationToken cancelationToken,string Add = "")
+        public async static Task<string> SaveTo(this IFormFile formFile, CancellationToken cancelationToken, string Add = "")
         {
             try
             {
-                var uploads = Path.Combine((Add  == "" )?Directory.GetCurrentDirectory():Add, "uploads");
+                var uploads = (Add == "") ? Directory.GetCurrentDirectory() + "uploads" : Add;
                 var fileName = $"{Guid.NewGuid()}_{formFile.FileName}";
                 if (formFile.Length > 0)
                 {
@@ -23,7 +23,7 @@ namespace Lookif.Library.Common
                     {
                         await formFile.CopyToAsync(fileStream, cancelationToken);
                     }
-                    return $"uploads\\{fileName}";
+                    return $"{uploads}\\{fileName}";
                 }
                 else
                 { throw new FileLoadException("No file is selected"); }
@@ -36,7 +36,7 @@ namespace Lookif.Library.Common
 
 
         }
-     
+
 
     }
 }
