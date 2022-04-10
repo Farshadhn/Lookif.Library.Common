@@ -14,7 +14,8 @@ namespace Lookif.Library.Common
         {
             try
             {
-                var uploads = (Add == "") ? Directory.GetCurrentDirectory() + "uploads" : Add;
+                
+                var uploads = (Add == "") ? Directory.GetCurrentDirectory() + "\\uploads" : Add;
                 var fileName = $"{Guid.NewGuid()}_{formFile.FileName}";
                 if (formFile.Length > 0)
                 {
@@ -23,7 +24,7 @@ namespace Lookif.Library.Common
                     {
                         await formFile.CopyToAsync(fileStream, cancelationToken);
                     }
-                    return $"{uploads}\\{fileName}";
+                    return $"{uploads.Replace(Directory.GetCurrentDirectory(),"")}\\{fileName}";
                 }
                 else
                 { throw new FileLoadException("No file is selected"); }
