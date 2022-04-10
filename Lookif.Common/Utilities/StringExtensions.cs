@@ -121,7 +121,16 @@ namespace Lookif.Library.Common.Utilities
         {
             return str?.Length > length ? $"{str.Substring(0, length)}..." : str;
         }
+        public static T ToEnum<T>(this string value, T defaultValue) where T : struct
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return defaultValue;
+            }
 
+            T result;
+            return Enum.TryParse<T>(value, true, out result) ? result : defaultValue;
+        }
 
 
     }
