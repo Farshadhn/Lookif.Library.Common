@@ -10,13 +10,16 @@ namespace Lookif.Library.Common.Utilities
         }
         public static DateTime ToDateTime(this string value)
         {
-           return DateTime.Parse(value);
+            return DateTime.Parse(value);
         }
         public static int ToInt(this string value)
         {
             return Convert.ToInt32(value);
         }
-
+        public static int ToInt(this string value, int defaultValue = 0)
+        {
+            return int.TryParse(value, out int res) ? res : defaultValue;
+        }
         public static decimal ToDecimal(this string value)
         {
             return Convert.ToDecimal(value);
@@ -117,7 +120,7 @@ namespace Lookif.Library.Common.Utilities
             return str?.Length == 0 ? null : str;
         }
 
-        public static string Truncate(this string str,int length = 120)
+        public static string Truncate(this string str, int length = 120)
         {
             return str?.Length > length ? $"{str.Substring(0, length)}..." : str;
         }
