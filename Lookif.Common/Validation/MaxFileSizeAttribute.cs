@@ -7,30 +7,49 @@ namespace Lookif.Library.Common.Validation
     public class MaxFileSizeAttribute : ValidationAttribute //[MaxFileSize(5* 1024 * 1024)]
     {
         private readonly int _maxFileSize;
-        public MaxFileSizeAttribute(int maxFileSize)
+
+        public bool NeedException { get; }
+
+        public MaxFileSizeAttribute(int maxFileSize, bool needException = false)
         {
             _maxFileSize = maxFileSize;
+            NeedException = needException;
         }
 
         protected override ValidationResult IsValid(
         object value, ValidationContext validationContext)
         {
-            //var extension = Path.GetExtension(file.FileName);
-            //var allowedExtensions = new[] { ".jpg", ".png" };`enter code here`
+            var error = FormatErrorMessage(validationContext.DisplayName);
+            var required = CheckIfRequired(validationContext);
+
+            if (value == null && !required)
+                return ValidationResult.Success;
             if (value is IFormFile file)
             {
                 if (file.Length > _maxFileSize)
-                {
-                    return new ValidationResult(GetErrorMessage());
-                }
+                    return ReturnError(error);
+                return ValidationResult.Success;
             }
+            //it wasnt placed on IFormFile
+            return ReturnError(error);
 
-            return ValidationResult.Success;
+
         }
-
-        public string GetErrorMessage()
+        private bool CheckIfRequired(ValidationContext validationContext)
         {
-            throw new Exception($"Maximum allowed file size is { _maxFileSize} bytes.");
+            var property = validationContext.ObjectInstance.GetType().GetProperty(validationContext.MemberName);
+            if (property.IsDefined(typeof(RequiredAttribute), false))
+                return true;
+            else
+                return false;
+
+        }
+        private ValidationResult ReturnError(string error)
+        {
+            if (!NeedException)
+                return new ValidationResult(error);
+
+            throw new Exception(error);
         }
     }
 }
