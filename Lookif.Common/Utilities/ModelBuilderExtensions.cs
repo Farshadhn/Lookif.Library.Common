@@ -107,13 +107,18 @@ namespace Lookif.Library.Common.Utilities
         /// </summary>
         /// <param name="modelBuilder"></param>
         /// <param name="assemblies">Assemblies contains Entities</param>
-        public static void RegisterAllEntities<TBaseType>(this ModelBuilder modelBuilder, params Assembly[] assemblies)
+        public static void RegisterAllEntities<TBaseType, TBaseTemporal>(this ModelBuilder modelBuilder, params Assembly[] assemblies)
         {
             IEnumerable<Type> types = assemblies.SelectMany(a => a.GetExportedTypes())
                 .Where(c => c.IsClass && !c.IsAbstract && c.IsPublic && typeof(TBaseType).IsAssignableFrom(c));
 
             foreach (Type type in types)
-                modelBuilder.Entity(type);
+            {
+                if (typeof(TBaseTemporal).IsAssignableFrom(type))
+                    modelBuilder.Entity(type).ToTable(e => e.IsTemporal());
+                else
+                    modelBuilder.Entity(type);
+            }
         }
     }
 }
