@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Lookif.Library.Common.Utilities
 {
@@ -22,7 +23,9 @@ namespace Lookif.Library.Common.Utilities
         }
         public static decimal ToDecimal(this string value)
         {
-            return Convert.ToDecimal(value);
+            value = value.Replace("/", ".");
+
+            return Convert.ToDecimal(value,CultureInfo.InvariantCulture);
         }
 
         public static string ToNumeric(this int value)
