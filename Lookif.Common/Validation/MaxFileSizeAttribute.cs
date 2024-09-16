@@ -2,54 +2,53 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Lookif.Library.Common.Validation
+namespace Lookif.Library.Common.Validation;
+
+public class MaxFileSizeAttribute : ValidationAttribute //[MaxFileSize(5* 1024 * 1024)]
 {
-    public class MaxFileSizeAttribute : ValidationAttribute //[MaxFileSize(5* 1024 * 1024)]
+    private readonly int _maxFileSize;
+
+    public bool NeedException { get; }
+
+    public MaxFileSizeAttribute(int maxFileSize, bool needException = false)
     {
-        private readonly int _maxFileSize;
+        _maxFileSize = maxFileSize;
+        NeedException = needException;
+    }
 
-        public bool NeedException { get; }
+    protected override ValidationResult IsValid(
+    object value, ValidationContext validationContext)
+    {
+        var error = FormatErrorMessage(validationContext.DisplayName);
+        var required = CheckIfRequired(validationContext);
 
-        public MaxFileSizeAttribute(int maxFileSize, bool needException = false)
+        if (value == null && !required)
+            return ValidationResult.Success;
+        if (value is IFormFile file)
         {
-            _maxFileSize = maxFileSize;
-            NeedException = needException;
+            if (file.Length > _maxFileSize)
+                return ReturnError(error);
+            return ValidationResult.Success;
         }
-
-        protected override ValidationResult IsValid(
-        object value, ValidationContext validationContext)
-        {
-            var error = FormatErrorMessage(validationContext.DisplayName);
-            var required = CheckIfRequired(validationContext);
-
-            if (value == null && !required)
-                return ValidationResult.Success;
-            if (value is IFormFile file)
-            {
-                if (file.Length > _maxFileSize)
-                    return ReturnError(error);
-                return ValidationResult.Success;
-            }
-            //it wasnt placed on IFormFile
-            return ReturnError(error);
+        //it wasnt placed on IFormFile
+        return ReturnError(error);
 
 
-        }
-        private bool CheckIfRequired(ValidationContext validationContext)
-        {
-            var property = validationContext.ObjectInstance.GetType().GetProperty(validationContext.MemberName);
-            if (property.IsDefined(typeof(RequiredAttribute), false))
-                return true;
-            else
-                return false;
+    }
+    private bool CheckIfRequired(ValidationContext validationContext)
+    {
+        var property = validationContext.ObjectInstance.GetType().GetProperty(validationContext.MemberName);
+        if (property.IsDefined(typeof(RequiredAttribute), false))
+            return true;
+        else
+            return false;
 
-        }
-        private ValidationResult ReturnError(string error)
-        {
-            if (!NeedException)
-                return new ValidationResult(error);
+    }
+    private ValidationResult ReturnError(string error)
+    {
+        if (!NeedException)
+            return new ValidationResult(error);
 
-            throw new Exception(error);
-        }
+        throw new Exception(error);
     }
 }

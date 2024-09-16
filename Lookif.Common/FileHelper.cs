@@ -1,43 +1,40 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Lookif.Library.Common
+namespace Lookif.Library.Common;
+
+public static class FileHelper
 {
-    public static class FileHelper
+    public async static Task<string> SaveTo(this IFormFile formFile, CancellationToken cancelationToken, string Add = "")
     {
-        public async static Task<string> SaveTo(this IFormFile formFile, CancellationToken cancelationToken, string Add = "")
+        try
         {
-            try
+            
+            var uploads = (Add == "") ? Directory.GetCurrentDirectory() + "\\uploads" : Add;
+            var fileName = $"{Guid.NewGuid()}_{formFile.FileName}";
+            if (formFile.Length > 0)
             {
-                
-                var uploads = (Add == "") ? Directory.GetCurrentDirectory() + "\\uploads" : Add;
-                var fileName = $"{Guid.NewGuid()}_{formFile.FileName}";
-                if (formFile.Length > 0)
+                var filePath = Path.Combine(uploads, fileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    var filePath = Path.Combine(uploads, fileName);
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await formFile.CopyToAsync(fileStream, cancelationToken);
-                    }
-                    return $"{uploads.Replace(Directory.GetCurrentDirectory(),"")}\\{fileName}";
+                    await formFile.CopyToAsync(fileStream, cancelationToken);
                 }
-                else
-                { throw new FileLoadException("No file is selected"); }
+                return $"{uploads.Replace(Directory.GetCurrentDirectory(),"")}\\{fileName}";
             }
-            catch (Exception)
-            {
+            else
+            { throw new FileLoadException("No file is selected"); }
+        }
+        catch (Exception)
+        {
 
-                throw;
-            }
-
-
+            throw;
         }
 
 
     }
+
+
 }
