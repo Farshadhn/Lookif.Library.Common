@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Pluralize.NET;
+using Lookif.Library.Common.Attributes.Database;
 
 namespace Lookif.Library.Common.Utilities;
 
@@ -69,12 +70,43 @@ public static class ModelBuilderExtensions
     /// </summary>
     /// <param name="modelBuilder"></param>
     public static void AddRestrictDeleteBehaviorConvention(this ModelBuilder modelBuilder)
-    {
+    { 
+
         IEnumerable<IMutableForeignKey> cascadeFKs = modelBuilder.Model.GetEntityTypes()
             .SelectMany(t => t.GetForeignKeys())
             .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
         foreach (IMutableForeignKey fk in cascadeFKs)
-            fk.DeleteBehavior = DeleteBehavior.Restrict;
+        {
+            var deleteBehavior = GetDeleteBehavior(fk);
+            fk.DeleteBehavior = deleteBehavior;
+        }
+
+
+        DeleteBehavior GetDeleteBehavior(IMutableForeignKey foreignKey)
+        {
+            // Check each property in the foreign key
+            foreach (var property in foreignKey.Properties)
+            {
+                var propertyInfo = property.PropertyInfo;
+                if (propertyInfo != null && propertyInfo.GetCustomAttribute<OnDelete>() != null)
+                {
+                    return propertyInfo.GetCustomAttribute<OnDelete>().deleteBehavior;
+                }
+            }
+
+            // Or check the navigation property if necessary
+            var navigation = foreignKey.PrincipalToDependent;
+            if (navigation != null)
+            {
+                var navigationProperty = navigation.PropertyInfo;
+                if (navigationProperty != null && navigationProperty.GetCustomAttribute<OnDelete>() != null)
+                {
+                    return navigationProperty.GetCustomAttribute<OnDelete>().deleteBehavior; 
+                }
+            }
+
+            return DeleteBehavior.Restrict;
+        }
     }
 
     /// <summary>

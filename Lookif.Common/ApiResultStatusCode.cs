@@ -6,6 +6,9 @@ public enum ApiResultStatusCode
 {
     [Display(Name = "عملیات با موفقیت انجام شد")]
     Success = 0,
+     
+    [Display(Name = "عملیات با موفقیت انجام شد اما هنوز تکمیل نشده است")]
+    SuccessButNotReady = 01,
 
     [Display(Name = "خطایی در سرور رخ داده است")]
     ServerError = 1,

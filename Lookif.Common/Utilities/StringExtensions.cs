@@ -25,7 +25,7 @@ public static class StringExtensions
     {
         value = value.Replace("/", ".");
 
-        return Convert.ToDecimal(value,CultureInfo.InvariantCulture);
+        return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
     }
 
     public static string ToNumeric(this int value)
@@ -138,5 +138,32 @@ public static class StringExtensions
         return Enum.TryParse<T>(value, true, out result) ? result : defaultValue;
     }
 
+    public static string ToPersianDate(this string date, DateTime defaultValue = default)
+    {
+        DateTime dt;
 
+
+        if (!DateTime.TryParse(date, out  dt))
+        {
+            if (defaultValue == default)
+                throw new Exception($"{date} is not a date");
+
+
+            dt = defaultValue;
+ 
+        }
+       
+
+        return dt.ToPersianDate();
+
+
+
+    }
+
+
+    public static DateOnly ToDateOnly(this string date)
+    {
+        return date.ToDateTime().ToDateOnly(); 
+    }
+     
 }
