@@ -70,7 +70,7 @@ public static class ModelBuilderExtensions
     /// </summary>
     /// <param name="modelBuilder"></param>
     public static void AddRestrictDeleteBehaviorConvention(this ModelBuilder modelBuilder)
-    { 
+    {
 
         IEnumerable<IMutableForeignKey> cascadeFKs = modelBuilder.Model.GetEntityTypes()
             .SelectMany(t => t.GetForeignKeys())
@@ -101,7 +101,7 @@ public static class ModelBuilderExtensions
                 var navigationProperty = navigation.PropertyInfo;
                 if (navigationProperty != null && navigationProperty.GetCustomAttribute<OnDelete>() != null)
                 {
-                    return navigationProperty.GetCustomAttribute<OnDelete>().deleteBehavior; 
+                    return navigationProperty.GetCustomAttribute<OnDelete>().deleteBehavior;
                 }
             }
 
@@ -139,10 +139,13 @@ public static class ModelBuilderExtensions
     /// </summary>
     /// <param name="modelBuilder"></param>
     /// <param name="assemblies">Assemblies contains Entities</param>
-    public static void RegisterAllEntities<TBaseType, TBaseTemporal>(this ModelBuilder modelBuilder, params Assembly[] assemblies)
+    public static void RegisterAllEntities<TBaseTemporal>(this ModelBuilder modelBuilder, Type baseEntityType, params Assembly[] assemblies)
     {
-        IEnumerable<Type> types = assemblies.SelectMany(a => a.GetExportedTypes())
-            .Where(c => c.IsClass && !c.IsAbstract && c.IsPublic && typeof(TBaseType).IsAssignableFrom(c));
+        var types = assemblies.SelectMany(a => a.GetExportedTypes())
+        .Where(c => c.IsClass && !c.IsAbstract && c.IsPublic
+                    && c.GetInterfaces().Any(i =>
+                        i.IsGenericType && i.GetGenericTypeDefinition() == baseEntityType)
+                    );
 
         foreach (Type type in types)
         {
